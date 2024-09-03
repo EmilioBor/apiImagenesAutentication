@@ -29,57 +29,20 @@ namespace PruebaImagen.Controllers
             }
             return imagen;
         }
-        //[HttpPost]
-        //public async Task<IActionResult> Create(IFormFile file)
-        //{
-        //    //var newImagen = await _service.Create(file);
 
-        //    //return CreatedAtAction(nameof(GetImagenById), new { id = newImagen.Id }, newImagen);
-        //    if (file == null || file.Length == 0)
-        //    {
-        //        return BadRequest("No se ha proporcionado ninguna imagen.");
-        //    }
-
-        //    using var memoryStream = new MemoryStream();
-        //    await file.CopyToAsync(memoryStream);
-        //    var imagen = new ImagenDtoIn
-        //    {
-        //        Nombre = file.FileName,
-        //        TipoContenido = file.ContentType,
-        //        Datos = memoryStream.ToArray()
-        //    };
-
-        //    _context.Imagen.Add(imagen);
-        //    await _context.SaveChangesAsync();
-
-        //    return Ok(new { imagen.Id });
-        //}
         [HttpPost]
         [Route("subir")]
         public async Task<IActionResult> SubirImagenes(List<IFormFile> files, int idPerfil)
         {
-            if (files == null || files.Count == 0)
+            try
             {
-                return BadRequest("No se han proporcionado imágenes.");
+                var imagenId = await _service.SubirImagenes(files, idPerfil);
+                return Ok(new { Id = imagenId });
             }
-
-            var imagen = new Imagen
+            catch (ArgumentException ex)
             {
-                IdPerfil = idPerfil,
-                Url = new List<byte[]>()
-            };
-
-            foreach (var file in files)
-            {
-                using var memoryStream = new MemoryStream();
-                await file.CopyToAsync(memoryStream);
-                imagen.Url.Add(memoryStream.ToArray());
+                return BadRequest(ex.Message);
             }
-
-            _context.Imagen.Add(imagen);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { imagen.Id });
         }
 
     }

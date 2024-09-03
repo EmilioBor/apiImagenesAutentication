@@ -28,39 +28,31 @@ namespace Services
             }).SingleOrDefaultAsync();
         }
 
-        //public async Task<A<Imagen>> Create(IFormFile file)
-        //{
-        //    //var newImagen = new Imagen();
+        public async Task<int> SubirImagenes(List<IFormFile> files, int idPerfil)
+        {
+            if (files == null || files.Count == 0)
+            {
+                throw new ArgumentException("No se han proporcionado imágenes.");
+            }
 
+            var imagen = new Imagen
+            {
+                IdPerfil = idPerfil,
+                Url = new List<byte[]>()
+            };
 
-        //    //newImagen.Url = imagen.Url;
-        //    //newImagen.IdPerfil = imagen.IdPerfil;
+            foreach (var file in files)
+            {
+                using var memoryStream = new MemoryStream();
+                await file.CopyToAsync(memoryStream);
+                imagen.Url.Add(memoryStream.ToArray());
+            }
 
+            _context.Imagen.Add(imagen);
+            await _context.SaveChangesAsync();
 
+            return imagen.Id;
+        }
 
-        //    //_context.Imagen.Add(newImagen);
-        //    //await _context.SaveChangesAsync();
-
-        //    //return newImagen;
-        //    if (file == null || file.Length == 0)
-        //    {
-        //        return BadRequest("No se ha proporcionado ninguna imagen.");
-        //    }
-
-        //    using var memoryStream = new MemoryStream();
-        //    await file.CopyToAsync(memoryStream);
-        //    var imagen = new Imagen
-        //    {
-        //        Nombre = file.FileName,
-        //        TipoContenido = file.ContentType,
-        //        Datos = memoryStream.ToArray()
-        //    };
-
-        //    _context.Imagenes.Add(imagen);
-        //    await _context.SaveChangesAsync();
-
-        //    return Ok(new { imagen.Id });
-        //}
-        
     }
 }
