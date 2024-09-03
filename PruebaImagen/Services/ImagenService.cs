@@ -3,6 +3,7 @@ using Core.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Models.Models;
+using System;
 
 namespace Services
 {
@@ -47,6 +48,10 @@ namespace Services
                 await file.CopyToAsync(memoryStream);
                 imagen.Url.Add(memoryStream.ToArray());
             }
+
+            //MemoryStream: Crea un flujo de memoria(MemoryStream) para leer el contenido del archivo.
+            //CopyToAsync: Copia de manera asíncrona los datos del archivo en el flujo de memoria.
+            //ToArray: Convierte el contenido del flujo de memoria a un array de bytes.
 
             _context.Imagen.Add(imagen);
             await _context.SaveChangesAsync();
